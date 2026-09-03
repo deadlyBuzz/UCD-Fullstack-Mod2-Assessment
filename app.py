@@ -1,23 +1,30 @@
 from flask import Flask, render_template, abort
 from datetime import datetime, timedelta
-import time
-
+import os
 
 app = Flask(__name__)
+#app.secret_key = os.environ['SECRET_KEY']
+# SECRET_KEY=whatever uv run app.py
+# Can also use SECRET_KEY='whatever' uv run app.py
+# Once installed - use SECRET_KEY='password' uv run gunicorn app:app
+# in render.io the start command is gunicorn app:app
+# add **/__pycache__/ into .gitignore
+# https://github.com/yoniLavi/mod2_unit_11_flask_example
+# https://mod2-unit-11-flask-example.onrender.com/
 
 
 leagueTable = ""
 
 
 allmatches = [
-    {"ID": "1", "Round": 1,  "Home": "Benetton",  "Away": "Dragons",  "Date": "Fri 25 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "2", "Round": 1,  "Home": "Connacht",  "Away": "Stormers",  "Date": "Fri 25 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "3", "Round": 1,  "Home": "Ulster",  "Away": "Edinburgh",  "Date": "Fri 25 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "4", "Round": 1,  "Home": "Lions",  "Away": "Leinster",  "Date": "Sat 26 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "5", "Round": 1,  "Home": "Sharks",  "Away": "Ospreys",  "Date": "Sat 26 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "6", "Round": 1,  "Home": "Zebre Parma",  "Away": "Bulls",  "Date": "Sat 26 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "7", "Round": 1,  "Home": "Munster",  "Away": "Glasgow Warriors",  "Date": "Sat 26 Sept 2026 ", "Scores": [ ]} ,
-    {"ID": "8", "Round": 1,  "Home": "Scarlets",  "Away": "Cardiff",  "Date": "Sat 26 Sept 2026 ", "Scores": [ ]} ,
+    {"ID": "1", "Round": 1,  "Home": "Benetton",  "Away": "Dragons",  "Date": "Fri 25  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "2", "Round": 1,  "Home": "Connacht",  "Away": "Stormers",  "Date": "Fri 25  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "3", "Round": 1,  "Home": "Ulster",  "Away": "Edinburgh",  "Date": "Fri 25  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "4", "Round": 1,  "Home": "Lions",  "Away": "Leinster",  "Date": "Sat 26  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "5", "Round": 1,  "Home": "Sharks",  "Away": "Ospreys",  "Date": "Sat 26  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "6", "Round": 1,  "Home": "Zebre Parma",  "Away": "Bulls",  "Date": "Sat 26  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "7", "Round": 1,  "Home": "Munster",  "Away": "Glasgow Warriors",  "Date": "Sat 26  Sep 2026 ", "Scores": [ ]} ,
+    {"ID": "8", "Round": 1,  "Home": "Scarlets",  "Away": "Cardiff",  "Date": "Sat 26  Sep 2026 ", "Scores": [ ]} ,
     {"ID": "9", "Round": 2,  "Home": "Benetton",  "Away": "Connacht",  "Date": "Fri 02 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "10", "Round": 2,  "Home": "Cardiff",  "Away": "Zebre Parma",  "Date": "Fri 02 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "11", "Round": 2,  "Home": "Edinburgh",  "Away": "Stormers",  "Date": "Fri 02 Oct 2026 ", "Scores": [ ]} ,
@@ -27,7 +34,7 @@ allmatches = [
     {"ID": "15", "Round": 2,  "Home": "Glasgow Warriors",  "Away": "Ulster",  "Date": "Sat 03 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "16", "Round": 2,  "Home": "Munster",  "Away": "Bulls",  "Date": "Sat 03 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "17", "Round": 3,  "Home": "ragons",  "Away": "Ospreys",  "Date": "Fri 9 Oct 2026 ", "Scores": [ ]} ,
-    {"ID": "18", "Round": 3,  "Home": "lasgow Warriors",  "Away": "Connacht",  "Date": "Fri 9 OctG 2026 ", "Scores": [ ]} ,
+    {"ID": "18", "Round": 3,  "Home": "lasgow Warriors",  "Away": "Connacht",  "Date": "Fri 9 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "19", "Round": 3,  "Home": "Bulls",  "Away": "Lions",  "Date": "Sat 10 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "20", "Round": 3,  "Home": "Stormers",  "Away": "Sharks",  "Date": "Sat 10 Oct 2026 ", "Scores": [ ]} ,
     {"ID": "21", "Round": 3,  "Home": "Zebre Parma",  "Away": "Edinburgh",  "Date": "Sat 10 Oct 2026 ", "Scores": [ ]} ,
@@ -178,16 +185,15 @@ allmatches = [
 class League:
     def __init__(self):
         self.matches = [] 
-        self.table = [
-            [
+        self.table = [          
                 Team("Benetton"), Team("Bulls"), Team("Cardiff"), Team("Connacht"), Team("Dragons"), Team("Edinburgh"), Team("Glasgow Warrors"),
                 Team("Leinster"), Team("Lions"), Team("Munster"), Team("Ospreys"), Team("Scarlets"), Team("Stormers"), Team("Sharks"), 
-                Team("Ulster"), Team("Zebre")]
+                Team("Ulster"), Team("Zebre")
             ]
 
         # Populate Matches Data.
         for entry in allmatches:
-            self.matches.append(Match(entry)) # Match object per entry.
+            self.matches.append(Match(entry))  # Match object per entry.
 #            for table in self.table:
 #                endDate = time.strpTime(table.get("Week"), "%a %d %b %Y")
 #                startDate = time.strpTime(entry.get("Date"), "%a %d %b %Y")
@@ -195,30 +201,33 @@ class League:
     def getTable(self, date):
         returnString = "<table><th><td>No.</td><td>Played</td><td>Won</td><td>Drawn</td><td>Lost</td><td>Try Bonus Points</td><td>Losing Bonus Points</td><td>Points</td></th>"
         index = 0
-        startDate = "20 Sept 2026"
+        startDate = "20  Sep 2026"
         for match in self.matches:
             for team in self.table:
-                if (datetime.strptime("%a, %d %b %y", match.date) <= (startDate + timedelta(days=7))):
+                if (datetime.strptime(match.date.strip(), "%a %d %b %Y") <= 
+                        (datetime.strptime(startDate, "%d %b %Y") + timedelta(days=7))):
                     if team.name == match.home:     # Home team - calculate points.
                         team.points += match.calcPoints()[0]
                     if team.name == match.away:     # Away team - calculate points
                         team.points += match.calcPoints()[1]
 
+        returnTable = []
         for team in self.table:
             index += 1
-            returnString += "<tr>"+str(index) + team.getEntry()
-
-        return returnString
+            # returnString += "<tr>"+str(index) + team.getEntry()
+            returnTable.append({"name": team.name, "position": index, "stats": team.getEntry()})
+        return returnTable
 
 
 class Match:
+    """
     def __init__(self, round, home, away, date):
         self.round = round
         self.home = home
         self.away = away
         self.date = date
         self.scores = []
-
+    """
     def __init__(self, dict):
         self.round = dict.get("Round")
         self.home = dict.get("Home")
@@ -246,10 +255,10 @@ class Match:
 
 
 class Score:
-    def __init__(self, type, value, time, scorer):
+    def __init__(self, type, value, timer, scorer):
         self.type = type
         self.value = value
-        self.time = time
+        self.time = timer
         self.scorer = scorer
 
 
@@ -277,13 +286,14 @@ class Team:
     def getEntry(self):
         returnString = "<td>" + self.name + "</td><td>" + str(self.played) + "</td><td>" + str(self.won) + "</td><td>" + str(self.drawn) + "</td><td>" + str(self.lost) 
         returnString += "</td><td>" + str(self.trybonuspoints) + "</td><td>" + str(self.losingbonuspoints) + "</td><td>" + str(self.points)  + "</td></tr>" 
-        return returnString
+        return [self.name, self.played, self.won, self.drawn, self.lost, self.trybonuspoints, self.losingbonuspoints, self.points]
 
 
 @app.route("/")
-def home(self):
-    table = League()
-    leagueTable = table.getTable()
+def home():
+    league = League()
+    leagueTable = league.getTable("27 Sep 2026")
+    return render_template("home.html", leagueTable=leagueTable)
 
 
 if __name__ == "__main__":
