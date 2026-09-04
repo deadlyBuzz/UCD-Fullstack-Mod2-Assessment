@@ -213,7 +213,7 @@ class League:
 
     def getTable(self, date):
         index = 0
-        startDate = "20  Sep 2026"
+        startDate = "20  Sep 2026"      # TODO AC1 2026-09-04: Update to a DateTime object.
         for match in self.matches:
             for team in self.table:
                 if (datetime.strptime(match.date.strip(), "%a %d %b %Y") <=
@@ -233,19 +233,11 @@ class League:
 
 
 class Match:
-    """
-    def __init__(self, round, home, away, date):
-        self.round = round
-        self.home = home
-        self.away = away
-        self.date = date
-        self.scores = []
-    """
     def __init__(self, dict):
         self.round = dict.get("Round")
         self.home = dict.get("Home")
         self.away = dict.get("Away")
-        self.date = dict.get("Date")
+        self.date = dict.get("Date")    # TODO AC1 2026-09-04: Update to a DateTime object.
         self.scores = dict.get("Scores")
 
     def updateScore(self, score):
@@ -265,6 +257,26 @@ class Match:
                 awayPoints += score.value
 
         return [homePoints, awayPoints]
+
+    def getMatchDetails(self):
+        returnObj = {}
+        returnObj['game'] = self.home + " vs " + self.away
+        returnObj['home'] = self.home
+        returnObj['away'] = self.away
+        returnObj['date'] = self.date       # TODO AC1 2026-09-04: Update to a DateTime object.
+        returnObj['homeScore'] = self.calcPoints()[0]
+        returnObj['homeScore'] = self.calcPoints()[1]
+
+        scores = [[2], []]
+        for score in self.scores:
+            if score.scorer == "home":
+                scores.append(0, score.type)
+                scores.append(1, "")
+            else:
+                scores.append(0, score.type)
+                scores.append(1, "")
+
+        return scores
 
 
 class Score:
@@ -297,16 +309,25 @@ class Team:
         self.points = 0
 
     def getEntry(self):
-        returnString = "<td>" + self.name + "</td><td>" + str(self.played) + "</td><td>" + str(self.won) + "</td><td>" + str(self.drawn) + "</td><td>" + str(self.lost) 
-        returnString += "</td><td>" + str(self.trybonuspoints) + "</td><td>" + str(self.losingbonuspoints) + "</td><td>" + str(self.points)  + "</td></tr>" 
-        return [self.name, self.played, self.won, self.drawn, self.lost, self.trybonuspoints, self.losingbonuspoints, self.points]
+        return [
+            self.name,
+            self.played,
+            self.won,
+            self.drawn,
+            self.lost,
+            self.trybonuspoints,
+            self.losingbonuspoints,
+            self.points]
 
 
 @app.route("/")
 def home():
     league = League()
     leagueTable = league.getTable("27 Sep 2026")
-    return render_template("home.html", leagueTable=leagueTable)
+    matchDetails = []
+    for match in league.matches:
+        matchDetails.append(match.getMatchDetails())
+    return render_template("home.html", leagueTable=leagueTable, matchDetails = matchDetails)
 
 
 if __name__ == "__main__":
