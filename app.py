@@ -220,11 +220,13 @@ class League:
                         (datetime.strptime(startDate, "%d %b %Y") +
                             timedelta(days=7))):
                     if team.name == match.home:
-                        team.points += match.calcPoints()[0]
+                        team.points += match.calcPoints()['homePoints']
                     if team.name == match.away:
-                        team.points += match.calcPoints()[1]
+                        team.points += match.calcPoints()['awayPoints']
 
         returnTable = []
+        # TODO: Update the Sorting for the table.
+
         for team in self.table:
             index += 1
             # returnString += "<tr>"+str(index) + team.getEntry()
@@ -247,25 +249,84 @@ class Match:
         del self.scores[-1]
 
     def calcPoints(self):
+        homeScore = 0
+        awayScore = 0
+        homeTries = 0
+        awayTries = 0
+        homeTryBonusPoints = 0
+        homeLosingBonusPoints = 0
+        awayTryBonusPoints = 0
+        awayLosingBonusPoints = 0
         homePoints = 0
         awayPoints = 0
 
+        # Calculate the total score for each team and the
+        # number of tries each team has scored.
         for score in self.scores:
-            if score.scorer == "Home":
-                homePoints += score.value
+            if score.scorer == "home":
+                homeScore += score.value
+                match score.type:
+                    case "T":
+                        homeTries += 1
+                    case "PT":
+                        homeTries += 1
             else:
-                awayPoints += score.value
+                awayScore += score.value
+                match score.type:
+                    case "T":
+                        awayTries += 1
+                    case "PT":
+                        awayTries += 1
 
-        return [homePoints, awayPoints]
+            # Now we have the scores and number of tries, calculate the
+            # number of match points each team has gotten from the match
+            if homeScore > awayScore:       # Home win
+                homePoints = 4
+                awayPoints = 0
+                if homeScore - awayScore <= 7:
+                    awayLosingBonusPoints = 1
+
+            elif homeScore < awayScore:     # Away Win
+                homePoints = 0
+                awayPoints = 4
+                if awayScore - homeScore <= 7:
+                    homeLosingBonusPoints = 1
+
+            else:                           # Draw
+                homePoints = 2
+                awayPoints = 2
+
+            # Calculate Bonus points.
+            if homeTries > 4:
+                homeTryBonusPoints += 1
+
+            if awayTries > 4:
+                awayTryBonusPoints += 1
+
+        return {
+            "homeScore": homeScore,
+            "awayScore": awayScore,
+            "homePoints": homePoints + homeTryBonusPoints +
+            homeLosingBonusPoints,
+            "awayPoints": awayPoints + homeTryBonusPoints +
+            homeLosingBonusPoints,
+            "homeTries": homeTries,
+            "awayTries": awayTries,
+            "homeTryBonusPoints": homeTryBonusPoints,
+            "awayTryBonusPoints": awayTryBonusPoints,
+            "homeLosingBonusPoints": homeLosingBonusPoints,
+            "awayLosingBonisPoints": awayLosingBonusPoints
+            }
 
     def getMatchDetails(self):
+        matchPoints = self.calcPoints()
         returnObj = {}
         returnObj['game'] = self.home + " vs " + self.away
         returnObj['home'] = self.home
         returnObj['away'] = self.away
         returnObj['date'] = self.date       # TODO AC1 2026-09-04: Update to a DateTime object.
-        returnObj['homeScore'] = self.calcPoints()[0]
-        returnObj['homeScore'] = self.calcPoints()[1]
+        returnObj['homeScore'] = matchPoints['homeScore']
+        returnObj['awayScore'] = matchPoints['awayScore']
 
         scores = [[]*2, []]
         for score in self.scores:
@@ -276,7 +337,8 @@ class Match:
                 scores[1].append(score.type)
                 scores[0].append("")
 
-        return scores
+        returnObj['Scores'] = scores
+        return returnObj
 
 
 class Score:
@@ -334,11 +396,12 @@ def dbgPopulateMatches(matches):
 @app.route("/")
 def home():
     league = League()
-    leagueTable = league.getTable("27 Sep 2026")
-    matchDetails = []
 
     # Add some scores for testing.  TODO Remove before launch AC 2026-09-04
     dbgPopulateMatches(league.matches)
+
+    leagueTable = league.getTable("27 Sep 2026")
+    matchDetails = []
 
     for match in league.matches:
         matchDetails.append(match.getMatchDetails())
