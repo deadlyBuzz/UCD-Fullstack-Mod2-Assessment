@@ -184,11 +184,24 @@ allmatches = [
 
 class League:
     def __init__(self):
-        self.matches = [] 
-        self.table = [          
-                Team("Benetton"), Team("Bulls"), Team("Cardiff"), Team("Connacht"), Team("Dragons"), Team("Edinburgh"), Team("Glasgow Warrors"),
-                Team("Leinster"), Team("Lions"), Team("Munster"), Team("Ospreys"), Team("Scarlets"), Team("Stormers"), Team("Sharks"), 
-                Team("Ulster"), Team("Zebre")
+        self.matches = []
+        self.table = [
+                Team("Benetton"),
+                Team("Bulls"),
+                Team("Cardiff"),
+                Team("Connacht"),
+                Team("Dragons"),
+                Team("Edinburgh"),
+                Team("Glasgow Warrors"),
+                Team("Leinster"),
+                Team("Lions"),
+                Team("Munster"),
+                Team("Ospreys"),
+                Team("Scarlets"),
+                Team("Stormers"),
+                Team("Sharks"),
+                Team("Ulster"),
+                Team("Zebre")
             ]
 
         # Populate Matches Data.
@@ -199,16 +212,16 @@ class League:
 #                startDate = time.strpTime(entry.get("Date"), "%a %d %b %Y")
 
     def getTable(self, date):
-        returnString = "<table><th><td>No.</td><td>Played</td><td>Won</td><td>Drawn</td><td>Lost</td><td>Try Bonus Points</td><td>Losing Bonus Points</td><td>Points</td></th>"
         index = 0
         startDate = "20  Sep 2026"
         for match in self.matches:
             for team in self.table:
-                if (datetime.strptime(match.date.strip(), "%a %d %b %Y") <= 
-                        (datetime.strptime(startDate, "%d %b %Y") + timedelta(days=7))):
-                    if team.name == match.home:     # Home team - calculate points.
+                if (datetime.strptime(match.date.strip(), "%a %d %b %Y") <=
+                        (datetime.strptime(startDate, "%d %b %Y") +
+                            timedelta(days=7))):
+                    if team.name == match.home:
                         team.points += match.calcPoints()[0]
-                    if team.name == match.away:     # Away team - calculate points
+                    if team.name == match.away:
                         team.points += match.calcPoints()[1]
 
         returnTable = []

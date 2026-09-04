@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+table {
+  border: 2px solid rgb(140 140 140);
+  font:
+    16px "Open Sans",
+    "Helvetica",
+    "Arial",
+    sans-serif;
+}
+th,
+td {
+  border: 1px solid rgb(160 160 160);
+  padding: 0.5rem;
+}
+.matchcard {
+  max-width: 600px;
+}

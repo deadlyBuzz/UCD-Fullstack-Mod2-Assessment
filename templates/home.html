@@ -3,5 +3,9 @@
 {% block Title %}Home Page{% endblock %}
 
 {% block content %}
-{{ leagueTable }}
+<table><tbody><tr><th>Position</th><th>Team</th><th>Played</th><th>Won</th><th>Drawn</th><th>Lost</th><th>Try BP</th><th>Losing BP</th><th>points</th></tr>
+{% for entry in leagueTable %}
+<tr><td>{{ entry.position }} </td> {% for data in entry.stats %}<td> {{ data }} </td> {% endfor %}</tr>
+{% endfor %}
+</tbody></table>
 {% endblock %}
