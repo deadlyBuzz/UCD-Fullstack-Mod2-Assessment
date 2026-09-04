@@ -267,14 +267,14 @@ class Match:
         returnObj['homeScore'] = self.calcPoints()[0]
         returnObj['homeScore'] = self.calcPoints()[1]
 
-        scores = [[2], []]
+        scores = [[]*2, []]
         for score in self.scores:
             if score.scorer == "home":
-                scores.append(0, score.type)
-                scores.append(1, "")
+                scores[0].append(score.type)
+                scores[1].append("")
             else:
-                scores.append(0, score.type)
-                scores.append(1, "")
+                scores[1].append(score.type)
+                scores[0].append("")
 
         return scores
 
@@ -320,14 +320,35 @@ class Team:
             self.points]
 
 
+# debug function for testing.
+# Add a bunch of match results so that we can see the table and the matches
+# being displayed.
+# TODO: Remove before Launch
+def dbgPopulateMatches(matches):
+    matches[0].updateScore(Score("T", 5, datetime.now(), "away"))
+    matches[0].updateScore(Score("T", 5, datetime.now(), "home"))
+    matches[0].updateScore(Score("C", 2, datetime.now(), "home"))
+    matches[0].updateScore(Score("T", 5, datetime.now(), "home"))
+
+
 @app.route("/")
 def home():
     league = League()
     leagueTable = league.getTable("27 Sep 2026")
     matchDetails = []
+
+    # Add some scores for testing.  TODO Remove before launch AC 2026-09-04
+    dbgPopulateMatches(league.matches)
+
     for match in league.matches:
         matchDetails.append(match.getMatchDetails())
-    return render_template("home.html", leagueTable=leagueTable, matchDetails = matchDetails)
+
+    print(matchDetails)
+    return render_template(
+        "home.html",
+        leagueTable=leagueTable,
+        matchDetails=matchDetails
+        )
 
 
 if __name__ == "__main__":
