@@ -333,8 +333,8 @@ class Match:
             "awayScore": awayScore,
             "homePoints": homePoints + homeTryBonusPoints +
             homeLosingBonusPoints,
-            "awayPoints": awayPoints + homeTryBonusPoints +
-            homeLosingBonusPoints,
+            "awayPoints": awayPoints + awayTryBonusPoints +
+            awayLosingBonusPoints,
             "homeTries": homeTries,
             "awayTries": awayTries,
             "homeTryBonusPoints": homeTryBonusPoints,
@@ -468,8 +468,10 @@ def home():
 def showMatch(matchID):
     today = datetime.strptime("26 Sep 2026", "%d %b %Y")
     if request.method == "POST":
-        homescore = request.form.get("homescore")
-        awayscore = request.form.get("awayScore")
+        homescore = request.form.get("homescore", "")
+        print(homescore)
+        awayscore = request.form.get("awayscore", "")
+        print(awayscore)
         match homescore:
             case "ht":
                 league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "home"))
@@ -481,18 +483,18 @@ def showMatch(matchID):
                 league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "home"))
             case "hpt":
                 league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "home"))
-            case "":
-                match awayscore:
-                    case "at":
-                        league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "away"))
-                    case "ac":
-                        league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "away"))
-                    case "ap":
-                        league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "away"))
-                    case "ag":
-                        league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "away"))
-                    case "apt":
-                        league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
+
+        match awayscore:
+            case "at":
+                league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "away"))
+            case "ac":
+                league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "away"))
+            case "ap":
+                league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "away"))
+            case "ag":
+                league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "away"))
+            case "apt":
+                league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
 
     displayMatch = league.matches[matchID].getMatchDetails(today)
     return render_template("match.html", match=displayMatch)
