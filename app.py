@@ -261,6 +261,7 @@ class Match:
         self.away = dict.get("Away")
         self.date = datetime.strptime(dict.get("Date").strip(), "%a %d %b %Y")
         self.scores = dict.get("Scores")
+        self.status = "scheduled"
 
     def updateScore(self, score):
         self.scores.append(score)
@@ -338,8 +339,15 @@ class Match:
             "awayLosingBonusPoints": awayLosingBonusPoints
             }
 
-    def getMatchDetails(self):
+    def getMatchDetails(self, currentDate):
         matchPoints = self.calcPoints()
+        if (self.date > currentDate):
+            self.status = 'scheduled'
+        elif (self.date == currentDate):
+            self.status = 'in-progress'
+        else:
+            self.status = 'full-time'
+
         returnObj = {}
         returnObj['game'] = self.home + " vs " + self.away
         returnObj['home'] = self.home
@@ -347,6 +355,7 @@ class Match:
         returnObj['date'] = datetime.strftime(self.date, "%a %d %b %Y")
         returnObj['homeScore'] = matchPoints['homeScore']
         returnObj['awayScore'] = matchPoints['awayScore']
+        returnObj['status'] = self.status
 
         scores = [[]*2, []]
         for score in self.scores:
@@ -435,11 +444,12 @@ def dbgPopulateMatches(matches):
 
 @app.route("/")
 def home():
+    today = datetime.strptime("26 Sep 2026", "%d %b %Y")
     leagueTable = league.getTable("27 Sep 2026")
     matchDetails = []
 
     for match in league.matches:
-        matchDetails.append(match.getMatchDetails())
+        matchDetails.append(match.getMatchDetails(today))
 
     print(matchDetails)  # TODO: Remove after Debug AC 2026-09-05
     return render_template(

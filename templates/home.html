@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{%- set myDict = {'scheduled':"bg-secondary",
+                    'in-progress':"bg-warning",
+                    'full-time':"bg-success"} -%}
 
 {% block Title %}Home Page{% endblock %}
 
@@ -12,7 +15,7 @@
 
 {% block matches %}
     {% for match in matchDetails %}
-    <div class="card matchcard text-white bg-secondary m-3 rounded">
+    <div class="card matchcard text-white {{ myDict[match.status] }} m-3 rounded">
             <div class="card-body">
                 <h5 class="card-title">{{ match.game }}</h5>
                 <h6 class="card-subtitle">{{ match.date}}</h6>
