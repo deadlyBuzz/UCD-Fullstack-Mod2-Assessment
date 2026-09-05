@@ -227,9 +227,9 @@ class League:
                         team.tries_against += matchData.get('awayTries')
                         team.losingbonuspoints += matchData.get('homeLosingBonusPoints')
                         team.played += 1
-                        team.won += (matchData.get('homeScore')>matchData.get('awayScore'))
-                        team.drawn += (matchData.get('homeScore')==matchData.get('awayScore'))
-                        team.lost += (matchData.get('homeScore')<matchData.get('awayScore'))
+                        team.won += (matchData.get('homeScore') > matchData.get('awayScore'))
+                        team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
+                        team.lost += (matchData.get('homeScore') < matchData.get('awayScore'))
 
                     if team.name == match.away:
                         team.points += matchData.get('awayPoints')
@@ -238,9 +238,9 @@ class League:
                         team.tries_against += matchData.get('homeTries')
                         team.losingbonuspoints += matchData.get('awayLosingBonusPoints')
                         team.played += 1
-                        team.won += (matchData.get('homeScore')<matchData.get('awayScore'))
-                        team.drawn += (matchData.get('homeScore')==matchData.get('awayScore'))
-                        team.lost += (matchData.get('homeScore')>matchData.get('awayScore'))
+                        team.won += (matchData.get('homeScore') < matchData.get('awayScore'))
+                        team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
+                        team.lost += (matchData.get('homeScore') > matchData.get('awayScore'))
 
         returnTable = []
         # TODO: Update the Sorting for the table.
@@ -344,7 +344,7 @@ class Match:
         returnObj['game'] = self.home + " vs " + self.away
         returnObj['home'] = self.home
         returnObj['away'] = self.away
-        returnObj['date'] = self.date
+        returnObj['date'] = datetime.strftime(self.date, "%a %d %b %Y")
         returnObj['homeScore'] = matchPoints['homeScore']
         returnObj['awayScore'] = matchPoints['awayScore']
 
@@ -358,7 +358,7 @@ class Match:
                 scores[0].append("")
 
         returnObj['Scores'] = scores
-        print(matchPoints)    # TODO: Remove after Debug.
+        # print(matchPoints)    # TODO: Remove after Debug.
         return returnObj
 
 
@@ -441,7 +441,7 @@ def home():
     for match in league.matches:
         matchDetails.append(match.getMatchDetails())
 
-    # print(matchDetails)
+    print(matchDetails)  # TODO: Remove after Debug AC 2026-09-05
     return render_template(
         "home.html",
         leagueTable=leagueTable,

@@ -9,3 +9,54 @@
 {% endfor %}
 </tbody></table>
 {% endblock %}
+
+{% block matches %}
+    {% for match in matchDetails %}
+    <div class="card matchcard text-white bg-secondary m-3 rounded">
+            <div class="card-body">
+                <h5 class="card-title">{{ match.game }}</h5>
+                <h6 class="card-subtitle">{{ match.date}}</h6>
+                <div class="card-text">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col" style="min-width:15rem">Team</th>
+                                <th scope="col">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Home</th>
+                                <td>{{ match.home }}</td>
+                                <td>{{ match.homeScore }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Away</th>
+                                <td>{{ match.away }}</td>
+                                <td>{{ match.awayScore }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-muted">Scores:</p>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Home:</td>
+                                {% for score in match.Scores[0] %}
+                                <td>{{ score }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td>Away:</td>
+                                {% for score in match.Scores[1] %}
+                                <td>{{ score }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+{% endblock %}
