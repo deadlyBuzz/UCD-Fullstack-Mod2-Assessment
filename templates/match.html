@@ -3,21 +3,22 @@
                     'in-progress':"bg-warning",
                     'full-time':"bg-success"} -%}
 
-{% block Title %}Home Page{% endblock %}
-
 {% block content %}
-<table><tbody><tr><th>Position</th><th>Team</th><th>Played</th><th>Won</th><th>Drawn</th><th>Lost</th><th>Try BP</th><th>Losing BP</th><th>points</th></tr>
-{% for entry in leagueTable %}
-<tr><td>{{ entry.position }} </td> {% for data in entry.stats %}<td> {{ data }} </td> {% endfor %}</tr>
-{% endfor %}
-</tbody></table>
-{% endblock %}
-
-{% block matches %}
-    {% for match in matchDetails %}
+    <form method="POST">
+        <label for="homescore">Home Score</label>
+        <select name="homescore" id="homescore">
+            <option value="">Select a Score...</option>
+            <option value="ht">Try</option>
+            <option value="hc">Conversion</option>
+            <option value="hp">Penalty</option>
+            <option value="hg">Drop Goal</option>
+            <option value="hpt">Penalty Try</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
     <div class="card matchcard text-white {{ myDict[match.status] }} m-3 rounded">
             <div class="card-body">
-                <a href="{{ url_for('showMatch', matchID = match.ID)}}"><h5 class="card-title">{{ match.game }}</h5></a>
+                <h5 class="card-title">{{ match.game }}</h5>
                 <h6 class="card-subtitle">{{ match.date}}</h6>
                 <div class="card-text">
                     <table>
@@ -61,5 +62,16 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
+        <form method="POST">
+        <label for="awayscore">Away Score</label>
+        <select name="awayscore" id="awayscore">
+            <option value="">Select a score...</option>
+            <option value="at">Try</option>
+            <option value="ac">Conversion</option>
+            <option value="ap">Penalty</option>
+            <option value="ag">Drop Goal</option>
+            <option value="apt">Penalty Try</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request, flash, redirect
 from datetime import datetime, timedelta
 import os
 
@@ -205,8 +205,11 @@ class League:
             ]
 
         # Populate Matches Data.
+        matchID = 0
         for entry in allmatches:
-            self.matches.append(Match(entry))  # Match object per entry.
+            # Match object per entry in allmatches
+            self.matches.append(Match(entry, matchID))
+            matchID += 1
 #            for table in self.table:
 #                endDate = time.strpTime(table.get("Week"), "%a %d %b %Y")
 #                startDate = time.strpTime(entry.get("Date"), "%a %d %b %Y")
@@ -255,13 +258,14 @@ class League:
 
 
 class Match:
-    def __init__(self, dict):
+    def __init__(self, dict, id):
         self.round = dict.get("Round")
         self.home = dict.get("Home")
         self.away = dict.get("Away")
         self.date = datetime.strptime(dict.get("Date").strip(), "%a %d %b %Y")
         self.scores = dict.get("Scores")
         self.status = "scheduled"
+        self.id = id
 
     def updateScore(self, score):
         self.scores.append(score)
@@ -356,6 +360,7 @@ class Match:
         returnObj['homeScore'] = matchPoints['homeScore']
         returnObj['awayScore'] = matchPoints['awayScore']
         returnObj['status'] = self.status
+        returnObj['ID'] = self.id
 
         scores = [[]*2, []]
         for score in self.scores:
@@ -459,8 +464,43 @@ def home():
         )
 
 
+@app.route("/matches/<int:matchID>", methods=["GET", "POST"])
+def showMatch(matchID):
+    today = datetime.strptime("26 Sep 2026", "%d %b %Y")
+    if request.method == "POST":
+        homescore = request.form.get("homescore")
+        awayscore = request.form.get("awayScore")
+        match homescore:
+            case "ht":
+                league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "home"))
+            case "hc":
+                league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "home"))
+            case "hp":
+                league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "home"))
+            case "hg":
+                league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "home"))
+            case "hpt":
+                league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "home"))
+            case "":
+                match awayscore:
+                    case "at":
+                        league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "away"))
+                    case "ac":
+                        league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "away"))
+                    case "ap":
+                        league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "away"))
+                    case "ag":
+                        league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "away"))
+                    case "apt":
+                        league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
+
+    displayMatch = league.matches[matchID].getMatchDetails(today)
+    return render_template("match.html", match=displayMatch)
+
+
 # Create the league on startup.
 league = League()
+
 
 # Add some scores for testing.  TODO Remove before launch AC 2026-09-04
 dbgPopulateMatches(league.matches)
