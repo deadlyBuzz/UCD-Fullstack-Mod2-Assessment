@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
-#app.secret_key = os.environ['SECRET_KEY']
+app.secret_key = os.environ['SECRET_KEY']
 # SECRET_KEY=whatever uv run app.py
 # Can also use SECRET_KEY='whatever' uv run app.py
 # Once installed - use SECRET_KEY='password' uv run gunicorn app:app
