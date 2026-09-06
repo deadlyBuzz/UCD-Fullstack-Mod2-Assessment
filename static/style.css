@@ -3,19 +3,23 @@
     margin: 0;
     padding: 0;
 }
-table {
-  border: 2px solid rgb(140 140 140);
-  font:
-    16px "Open Sans",
+
+
+.matchcard {
+  max-width: 600px;
+}
+
+.headerLogo{
+max-width: 100px;
+}
+
+.headerTitle{
+color: #3fb8e7;
+outline:white;
+outline-color: white;
+font:
+    24px "Impact",
     "Helvetica",
     "Arial",
     sans-serif;
-}
-th,
-td {
-  border: 1px solid rgb(160 160 160);
-  padding: 0.5rem;
-}
-.matchcard {
-  max-width: 600px;
 }
