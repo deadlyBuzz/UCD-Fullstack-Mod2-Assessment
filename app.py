@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
-app.secret_key = os.environ['SECRET_KEY']
+# app.secret_key = os.environ['SECRET_KEY'] # Disabled during dev so Debugger can attach.
+
 # SECRET_KEY=whatever uv run app.py
 # Can also use SECRET_KEY='whatever' uv run app.py
 # Once installed - use SECRET_KEY='password' uv run gunicorn app:app
@@ -14,6 +15,7 @@ app.secret_key = os.environ['SECRET_KEY']
 
 
 leagueTable = ""
+debug = False
 
 
 allmatches = [
@@ -372,7 +374,7 @@ class Match:
                 scores[0].append("")
 
         returnObj['Scores'] = scores
-        # print(matchPoints)    # TODO: Remove after Debug.
+        # debugPrint(debug, matchPoints)    # TODO: Remove after Debug.
         return returnObj
 
 
@@ -456,7 +458,7 @@ def home():
     for match in league.matches:
         matchDetails.append(match.getMatchDetails(today))
 
-    print(matchDetails)  # TODO: Remove after Debug AC 2026-09-05
+    debugPrint(debug, matchDetails)  # TODO: Remove after Debug AC 2026-09-05
     return render_template(
         "home.html",
         leagueTable=leagueTable,
@@ -469,9 +471,9 @@ def showMatch(matchID):
     today = datetime.strptime("26 Sep 2026", "%d %b %Y")
     if request.method == "POST":
         homescore = request.form.get("homescore", "")
-        print(homescore)
+        debugPrint(debug, homescore)
         awayscore = request.form.get("awayscore", "")
-        print(awayscore)
+        debugPrint(debug, awayscore)
         match homescore:
             case "ht":
                 league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "home"))
@@ -498,6 +500,13 @@ def showMatch(matchID):
 
     displayMatch = league.matches[matchID].getMatchDetails(today)
     return render_template("match.html", match=displayMatch)
+
+
+# debug print convenience message.
+# Make it easier to deactivate messages when not debugging.
+def debugPrint(debug, message):
+    if debug is True:
+        print(message)
 
 
 # Create the league on startup.
