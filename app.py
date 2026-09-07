@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import os
 
 app = Flask(__name__)
-# app.secret_key = os.environ['SECRET_KEY'] # Disabled during dev so Debugger can attach.
+# app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
 
 # SECRET_KEY=whatever uv run app.py
 # Can also use SECRET_KEY='whatever' uv run app.py
@@ -268,11 +268,21 @@ class Match:
         self.scores = dict.get("Scores")
         self.status = "scheduled"
         self.id = id
+        self.undoLocked = False
 
     def updateScore(self, score):
         self.scores.append(score)
+        self.undoLocked = False
 
     def undoScore(self):
+        lastIndex = 0
+        lastIndex = len(self.scores)
+        lastIndex = lastIndex - 1
+        lastScore = self.scores[lastIndex]
+        scoreType = self.scores[lastIndex].type
+        if (scoreType != 'C'):
+            self.undoLocked = True
+
         del self.scores[-1]
 
     def calcPoints(self):
@@ -342,7 +352,8 @@ class Match:
             "homeTryBonusPoints": homeTryBonusPoints,
             "awayTryBonusPoints": awayTryBonusPoints,
             "homeLosingBonusPoints": homeLosingBonusPoints,
-            "awayLosingBonusPoints": awayLosingBonusPoints
+            "awayLosingBonusPoints": awayLosingBonusPoints,
+            "undoLocked": self.undoLocked
             }
 
     def getMatchDetails(self, currentDate):
@@ -374,6 +385,7 @@ class Match:
                 scores[0].append("")
 
         returnObj['Scores'] = scores
+        returnObj['undoLocked'] = self.undoLocked
         # debugPrint(debug, matchPoints)    # TODO: Remove after Debug.
         return returnObj
 

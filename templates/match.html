@@ -101,7 +101,7 @@
         <form method="POST">
             <h5>Undo Last Score</h5>
             <p>Press the 'UNDO' button to remove the last score</p>
-            <button type="submit" name="undoButton" class="btn btn-primary">Undo</button>
+            <button type="submit" name="undoButton" class="btn btn-primary {% if match.undoLocked %} disabled {% endif %}">Undo</button>
         </form>
     </div>
 </section>
