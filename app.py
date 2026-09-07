@@ -474,29 +474,37 @@ def showMatch(matchID):
         debugPrint(debug, homescore)
         awayscore = request.form.get("awayscore", "")
         debugPrint(debug, awayscore)
-        match homescore:
-            case "ht":
-                league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "home"))
-            case "hc":
-                league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "home"))
-            case "hp":
-                league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "home"))
-            case "hg":
-                league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "home"))
-            case "hpt":
-                league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "home"))
+        homeButtonVal = request.form.get("homeButton")
+        awayButtonVal = request.form.get("awayButton")
+        undoButtonVal = request.form.get("undoButton")
+        if (homeButtonVal is not None):
+            match homescore:
+                case "ht":
+                    league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "home"))
+                case "hc":
+                    league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "home"))
+                case "hp":
+                    league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "home"))
+                case "hg":
+                    league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "home"))
+                case "hpt":
+                    league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "home"))
 
-        match awayscore:
-            case "at":
-                league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "away"))
-            case "ac":
-                league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "away"))
-            case "ap":
-                league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "away"))
-            case "ag":
-                league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "away"))
-            case "apt":
-                league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
+        if (awayButtonVal is not None):
+            match awayscore:
+                case "at":
+                    league.matches[matchID].updateScore(Score("T", 5, datetime.now(), "away"))
+                case "ac":
+                    league.matches[matchID].updateScore(Score("C", 2, datetime.now(), "away"))
+                case "ap":
+                    league.matches[matchID].updateScore(Score("P", 3, datetime.now(), "away"))
+                case "ag":
+                    league.matches[matchID].updateScore(Score("G", 3, datetime.now(), "away"))
+                case "apt":
+                    league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
+
+        if (undoButtonVal is not None):
+            league.matches[matchID].undoScore()
 
     displayMatch = league.matches[matchID].getMatchDetails(today)
     return render_template("match.html", match=displayMatch)
