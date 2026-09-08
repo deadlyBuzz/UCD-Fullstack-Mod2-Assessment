@@ -26,6 +26,7 @@
                     <th scope="row">Losing BP</th>
                     <th scope="row">Points Difference</th>
                     <th scope="row">points</th>
+                    <th scope="row">Last week</th>
                 </tr>
                 {% for entry in leagueTable %}
                 <tr>
@@ -33,6 +34,7 @@
                     {% for data in entry.stats %}
                     <td> {{ data }} </td>
                     {% endfor %}
+                    <td> {{ entry.tabledelta }} </td>
                 </tr>
                 {% endfor %}
             </tbody>

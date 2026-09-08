@@ -219,13 +219,19 @@ class League:
 
     def getTable(self, date):
         index = 0
-        startDate = datetime.strptime("20  Sep 2026", "%d %b %Y")
+        prevTableBuilt = False
+        selectedDate = datetime.strptime("20  Sep 2026", "%d %b %Y")
+        prevTable = []
         for team in self.table:
             team.clearData()
         for match in self.matches:
+            if ((prevTableBuilt is False) and (match.date >= selectedDate)):
+                prevTable = self.table
+                prevTableBuilt = True
+
             matchData = match.calcPoints()
             for team in self.table:
-                if (match.date <= (startDate + timedelta(days=7))):
+                if (match.date <= (selectedDate + timedelta(days=7))):
                     if team.name == match.home:
                         team.points += matchData.get('homePoints')
                         team.trybonuspoints += matchData.get('homeTryBonusPoints')
@@ -248,16 +254,29 @@ class League:
                         team.won += (matchData.get('homeScore') < matchData.get('awayScore'))
                         team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
                         team.lost += (matchData.get('homeScore') > matchData.get('awayScore'))
-                        team.pointsdifference += matchData.get('awayPointsDifference')
+                        team.pointsdifference += matchData.get('awayPointsDifference')                    
 
         returnTable = []
-        # TODO: Update the Sorting for the table.
-        
+        prevReturnTable = []
+
+        for team in sorted(prevTable, key=attrgetter('points', 'won', 'pointsdifference'), reverse=True):
+            index += 1
+            prevReturnTable.append({
+                "name": team.name,
+                "position": index,
+                "stats": team.getEntry()})
+
+        index = 0
+
         for team in sorted(self.table, key=attrgetter('points', 'won', 'pointsdifference'), reverse=True):
             index += 1
+            if len(prevReturnTable) > 0:
+                lastWeek = next(item for item in prevReturnTable if item['name'] == team.name)
+            tableDelta = lastWeek.get('position')
             returnTable.append({
                 "name": team.name,
                 "position": index,
+                "tabledelta": tableDelta,
                 "stats": team.getEntry()})
 
         return returnTable
@@ -282,7 +301,6 @@ class Match:
         lastIndex = 0
         lastIndex = len(self.scores)
         lastIndex = lastIndex - 1
-        lastScore = self.scores[lastIndex]
         scoreType = self.scores[lastIndex].type
         if (scoreType != 'C'):
             self.undoLocked = True
