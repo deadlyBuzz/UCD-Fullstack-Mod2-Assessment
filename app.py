@@ -1,5 +1,6 @@
 from flask import Flask, render_template, abort, request, flash, redirect
 from datetime import datetime, timedelta
+from operator import attrgetter
 import os
 
 app = Flask(__name__)
@@ -235,6 +236,7 @@ class League:
                         team.won += (matchData.get('homeScore') > matchData.get('awayScore'))
                         team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
                         team.lost += (matchData.get('homeScore') < matchData.get('awayScore'))
+                        team.pointsdifference += matchData.get('homePointsDifference')
 
                     if team.name == match.away:
                         team.points += matchData.get('awayPoints')
@@ -246,16 +248,18 @@ class League:
                         team.won += (matchData.get('homeScore') < matchData.get('awayScore'))
                         team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
                         team.lost += (matchData.get('homeScore') > matchData.get('awayScore'))
+                        team.pointsdifference += matchData.get('awayPointsDifference')
 
         returnTable = []
         # TODO: Update the Sorting for the table.
-
-        for team in self.table:
+        
+        for team in sorted(self.table, key=attrgetter('points', 'won', 'pointsdifference'), reverse=True):
             index += 1
             returnTable.append({
                 "name": team.name,
                 "position": index,
                 "stats": team.getEntry()})
+
         return returnTable
 
 
@@ -353,6 +357,8 @@ class Match:
             "awayTryBonusPoints": awayTryBonusPoints,
             "homeLosingBonusPoints": homeLosingBonusPoints,
             "awayLosingBonusPoints": awayLosingBonusPoints,
+            "homePointsDifference": homeScore - awayScore,
+            "awayPointsDifference": awayScore - homeScore,
             "undoLocked": self.undoLocked
             }
 
@@ -417,6 +423,7 @@ class Team:
         self.penalties_against = 0
         self.trybonuspoints = 0
         self.losingbonuspoints = 0
+        self.pointsdifference = 0
         self.points = 0
 
     def getEntry(self):
@@ -428,6 +435,7 @@ class Team:
             self.lost,
             self.trybonuspoints,
             self.losingbonuspoints,
+            self.pointsdifference,
             self.points]
 
     def clearData(self):
@@ -447,7 +455,9 @@ class Team:
         self.penalties_against = 0
         self.trybonuspoints = 0
         self.losingbonuspoints = 0
+        self.pointsdifference = 0
         self.points = 0
+        
 
 
 # debug function for testing.
