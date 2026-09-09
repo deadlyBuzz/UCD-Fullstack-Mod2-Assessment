@@ -27,3 +27,8 @@ font:
 .cardHeader{
     color:white
 }
+
+.redcard{
+    max-width: 800px;
+    background-color: red;
+}

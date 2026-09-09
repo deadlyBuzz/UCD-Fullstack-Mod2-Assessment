@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% import "mac_Match.html" as macMatch %}
+{%- set myDict = {'scheduled':"bg-secondary",
+                    'in-progress':"bg-warning",
+                    'full-time':"bg-success"} -%}
+
+{%- set tableDict = {'scheduled':"table-secondary",
+                    'in-progress':"table-warning",
+                    'full-time':"table-success"} -%}
+
+{% block Title %}Team Details Page{% endblock %}
+
+{% block content %}
+<section>
+    <div class="d-flex container flex-column align-items-center justify-content-center">
+        <div class="card {{ team.primaryColour -}}card text-white m-1 rounded-3 w-100">
+            <div class="card-header">
+                        <h5 class="card-title">{{ team.name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    <p>Team Stats go Here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="mx-5">
+    <div class="d-flex container-fluid flex-column align-items-center justify-content-center m-3 py-2">
+        <div class="d-flex container flex-column vh-100 scrollable overflow-auto align-items-center">
+            {% for match in matchDetails %}
+                {{ macMatch.displayMatch(match, myDict, tableDict)}}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -189,22 +189,22 @@ class League:
     def __init__(self):
         self.matches = []
         self.table = [
-                Team("Benetton"),
-                Team("Bulls"),
-                Team("Cardiff"),
-                Team("Connacht"),
-                Team("Dragons"),
-                Team("Edinburgh"),
-                Team("Glasgow Warriors"),
-                Team("Leinster"),
-                Team("Lions"),
-                Team("Munster"),
-                Team("Ospreys"),
-                Team("Scarlets"),
-                Team("Stormers"),
-                Team("Sharks"),
-                Team("Ulster"),
-                Team("Zebre Parma")
+                Team("Benetton", "green", "white"),
+                Team("Bulls", "blue", "white"),
+                Team("Cardiff", "blue", "navy"),
+                Team("Connacht", "green", "green"),
+                Team("Dragons", "black", "yellow"),
+                Team("Edinburgh", "navy", "orange"),
+                Team("Glasgow Warriors", "black", "blue"),
+                Team("Leinster", "blue", "white"),
+                Team("Lions", "red", "white"),
+                Team("Munster", "red", "navy"),
+                Team("Ospreys", "black", "white"),
+                Team("Scarlets", "red", "red"),
+                Team("Stormers", "blue", "white"),
+                Team("Sharks", "black", "grey"),
+                Team("Ulster", "white", "white"),
+                Team("Zebre Parma", "yellow", "blue")
             ]
 
         # Populate Matches Data.
@@ -292,6 +292,9 @@ class League:
                 "stats": team.getEntry()})
 
         return returnTable
+
+    def getTeam(self, teamName):
+        return next((team for team in self.table if team.name == teamName), None)
 
 
 class Match:
@@ -460,7 +463,7 @@ class Score:
 
 
 class Team:
-    def __init__(self, name):
+    def __init__(self, name, primaryColour, secondaryColour):
         self.name = name
         self.played = 0
         self.won = 0
@@ -480,6 +483,8 @@ class Team:
         self.losingbonuspoints = 0
         self.pointsdifference = 0
         self.points = 0
+        self.primaryColour = primaryColour
+        self.secondaryColour = secondaryColour
 
     def getEntry(self):
         return [
@@ -584,6 +589,19 @@ def showMatch(matchID):
 
     displayMatch = league.matches[matchID].getMatchDetails(today)
     return render_template("match.html", match=displayMatch)
+
+
+@app.route("/teams/<teamname>")
+def displayTeam(teamname, queyDate=datetime.strptime("26 Sep 2026", "%d %b %Y")):
+    today = queyDate
+    matchDetails = []
+    leagueTable = league.getTable("27 Sep 2026")
+    for match in league.matches:
+        if (match.home == teamname) or ((match.away == teamname)):
+            matchDetails.append(match.getMatchDetails(today))
+
+    team = league.getTeam(teamname)
+    return render_template("team.html", leagueTable=leagueTable, matchDetails=matchDetails, team=team)
 
 
 # debug print convenience message.
