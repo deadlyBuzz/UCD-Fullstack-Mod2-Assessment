@@ -243,6 +243,12 @@ class League:
                         team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
                         team.lost += (matchData.get('homeScore') < matchData.get('awayScore'))
                         team.pointsdifference += matchData.get('homePointsDifference')
+                        team.conversions_for += matchData.get('homeConversions')
+                        team.conversions_against += matchData.get('awayConversions')
+                        team.dropgoals_for += matchData.get('homeDropgoals')
+                        team.dropgoals_against += matchData.get('awayDropgoals')
+                        team.penalties_for += matchData.get('homePenalties')
+                        team.penalties_against += matchData.get('awayPenalties')
 
                     if team.name == match.away:
                         team.points += matchData.get('awayPoints')
@@ -255,6 +261,12 @@ class League:
                         team.drawn += (matchData.get('homeScore') == matchData.get('awayScore'))
                         team.lost += (matchData.get('homeScore') > matchData.get('awayScore'))
                         team.pointsdifference += matchData.get('awayPointsDifference')                    
+                        team.conversions_for += matchData.get('awayConversions')
+                        team.conversions_against += matchData.get('homeConversions')
+                        team.dropgoals_for += matchData.get('awayDropgoals')
+                        team.dropgoals_against += matchData.get('homeDropgoals')
+                        team.penalties_for += matchData.get('awayPenalties')
+                        team.penalties_against += matchData.get('homePenalties')
 
         returnTable = []
         prevReturnTable = []
@@ -316,6 +328,12 @@ class Match:
         homeLosingBonusPoints = 0
         awayTryBonusPoints = 0
         awayLosingBonusPoints = 0
+        homeConversions = 0
+        awayConversions = 0
+        homeDropgoals = 0
+        awayDropgoals = 0
+        homePenalties = 0
+        awayPenalties = 0
         homePoints = 0
         awayPoints = 0
 
@@ -329,6 +347,13 @@ class Match:
                         homeTries += 1
                     case "PT":
                         homeTries += 1
+                    case "C":
+                        homeConversions += 1
+                    case "P":
+                        homePenalties += 1
+                    case "DG":
+                        homeDropgoals += 1
+                        
             else:
                 awayScore += score.value
                 match score.type:
@@ -336,6 +361,12 @@ class Match:
                         awayTries += 1
                     case "PT":
                         awayTries += 1
+                    case "C":
+                        awayConversions += 1
+                    case "P":
+                        awayPenalties += 1
+                    case "DG":
+                        awayDropgoals += 1
 
         # Now we have the scores and number of tries, calculate the
         # number of match points each team has gotten from the match
@@ -356,10 +387,10 @@ class Match:
             awayPoints = 2
 
         # Calculate Bonus points.
-        if homeTries > 4:
+        if homeTries >= 4:
             homeTryBonusPoints += 1
 
-        if awayTries > 4:
+        if awayTries >= 4:
             awayTryBonusPoints += 1
 
         return {
@@ -377,6 +408,12 @@ class Match:
             "awayLosingBonusPoints": awayLosingBonusPoints,
             "homePointsDifference": homeScore - awayScore,
             "awayPointsDifference": awayScore - homeScore,
+            "homeConversions": homeConversions,
+            "awayConversions": awayConversions,
+            "homePenalties": homePenalties,
+            "awayPenalties": awayPenalties,
+            "homeDropgoals": homeDropgoals,
+            "awayDropgoals": awayDropgoals,
             "undoLocked": self.undoLocked
             }
 
@@ -475,7 +512,6 @@ class Team:
         self.losingbonuspoints = 0
         self.pointsdifference = 0
         self.points = 0
-        
 
 
 # debug function for testing.

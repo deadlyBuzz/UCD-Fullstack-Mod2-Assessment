@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "mac_Match.html" as macMatch %}
 {%- set myDict = {'scheduled':"bg-secondary",
                     'in-progress':"bg-warning",
                     'full-time':"bg-success"} -%}
@@ -44,58 +45,11 @@
 
 <section class="mx-5">
     <div class="d-flex container-fluid flex-column align-items-center justify-content-center m-3 py-2">
-        {% for match in matchDetails %}
-        <div class="card matchcard text-white {{ myDict[match.status] }} m-1 rounded-3 w-100">
-            <a href="{{ url_for('showMatch', matchID = match.ID)}}">
-                <div class="card-header">
-                    <h5 class="card-title">{{ match.game }}</h5>
-                    <h6 class="card-subtitle">{{ match.date}}</h6>
-                </div>
-            </a>
-            <div class="card-body">
-                <div class="card-text">
-                    <table class="table {{ tableDict[match.status] }}">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">Team</th>
-                                <th scope="col">Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Home</th>
-                                <td>{{ match.home }}</td>
-                                <td>{{ match.homeScore }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Away</th>
-                                <td>{{ match.away }}</td>
-                                <td>{{ match.awayScore }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p class="text-muted">Scores:</p>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Home:</td>
-                                {% for score in match.Scores[0] %}
-                                <td>{{ score }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <td>Away:</td>
-                                {% for score in match.Scores[1] %}
-                                <td>{{ score }}</td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="d-flex container flex-column vh-100 scrollable overflow-auto align-items-center">
+            {% for match in matchDetails %}
+                {{ macMatch.displayMatch(match, myDict, tableDict)}}
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </section>
 {% endblock %}
