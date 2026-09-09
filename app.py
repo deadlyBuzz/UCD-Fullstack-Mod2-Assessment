@@ -4,7 +4,7 @@ from operator import attrgetter
 import os
 
 app = Flask(__name__)
-# app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
+app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
 
 # SECRET_KEY=whatever uv run app.py
 # Can also use SECRET_KEY='whatever' uv run app.py
