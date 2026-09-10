@@ -13,13 +13,53 @@
 {% block content %}
 <section>
     <div class="d-flex container flex-column align-items-center justify-content-center">
-        <div class="card {{ team.primaryColour -}}card text-white m-1 rounded-3 w-100">
+        <div class="card m-1 rounded-3 w-100" style="color: {{- team.secondaryColour }}; background: {{ team.primaryColour}};">
             <div class="card-header">
                         <h5 class="card-title">{{ team.name }}</h5>
             </div>
             <div class="card-body">
                 <div class="card-text">
-                    <p>Team Stats go Here.</p>
+                    <table class="table table-striped table-{{- team.theme }}" >
+                        <thead>
+                            <tr>
+                                <th scope="col">Record</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Match</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Biggest Win</td>
+                                <td> {{ team.stats["biggestwin"]["Score"]}}</td>
+                                <td> {{ team.stats["biggestwin"]["match"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Biggest Loss</td>
+                                <td> {{ team.stats["biggestloss"]["Score"]}}</td>
+                                <td> {{ team.stats["biggestloss"]["match"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Most Tries Scored</td>
+                                <td> {{ team.stats["mosttriesscored"]["Score"]}}</td>
+                                <td> {{ team.stats["mosttriesscored"]["match"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Most Tries Conceded</td>
+                                <td> {{ team.stats["mosttriesconceded"]["Score"]}}</td>
+                                <td> {{ team.stats["mosttriesconceded"]["match"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>highest Score</td>
+                                <td> {{ team.stats["highestscore"]["Score"]}}</td>
+                                <td> {{ team.stats["highestscore"]["match"]}}</td>
+                            </tr>
+                            <tr>
+                                <td>Highest Conceded</td>
+                                <td> {{ team.stats["highestconceded"]["Score"]}}</td>
+                                <td> {{ team.stats["highestconceded"]["match"]}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ from operator import attrgetter
 import os
 
 app = Flask(__name__)
-app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
+# app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
 
 # SECRET_KEY=whatever uv run app.py
 # Can also use SECRET_KEY='whatever' uv run app.py
@@ -189,22 +189,22 @@ class League:
     def __init__(self):
         self.matches = []
         self.table = [
-                Team("Benetton", "green", "white"),
-                Team("Bulls", "blue", "white"),
-                Team("Cardiff", "blue", "navy"),
-                Team("Connacht", "green", "green"),
-                Team("Dragons", "black", "yellow"),
-                Team("Edinburgh", "navy", "orange"),
-                Team("Glasgow Warriors", "black", "blue"),
-                Team("Leinster", "blue", "white"),
-                Team("Lions", "red", "white"),
-                Team("Munster", "red", "navy"),
-                Team("Ospreys", "black", "white"),
-                Team("Scarlets", "red", "red"),
-                Team("Stormers", "blue", "white"),
-                Team("Sharks", "black", "grey"),
-                Team("Ulster", "white", "white"),
-                Team("Zebre Parma", "yellow", "blue")
+                Team("Benetton", "green", "white", "success"),
+                Team("Bulls", "blue", "white", "info"),
+                Team("Cardiff", "blue", "navy", "primary"),
+                Team("Connacht", "green", "white", "success"),
+                Team("Dragons", "black", "yellow", "warning"),
+                Team("Edinburgh", "navy", "orange", "primary"),
+                Team("Glasgow Warriors", "black", "blue", "dark"),
+                Team("Leinster", "blue", "white", "info"),
+                Team("Lions", "red", "white", "danger"),
+                Team("Munster", "red", "navy", "danger"),
+                Team("Ospreys", "black", "white", "dark"),
+                Team("Scarlets", "red", "red", "danger"),
+                Team("Stormers", "blue", "white", "info"),
+                Team("Sharks", "black", "grey", "dark"),
+                Team("Ulster", "white", "red", "light"),
+                Team("Zebre Parma", "yellow", "blue", "warning")
             ]
 
         # Populate Matches Data.
@@ -267,6 +267,8 @@ class League:
                         team.dropgoals_against += matchData.get('homeDropgoals')
                         team.penalties_for += matchData.get('awayPenalties')
                         team.penalties_against += matchData.get('homePenalties')
+
+                team.setRecords(match)
 
         returnTable = []
         prevReturnTable = []
@@ -463,7 +465,7 @@ class Score:
 
 
 class Team:
-    def __init__(self, name, primaryColour, secondaryColour):
+    def __init__(self, name, primaryColour, secondaryColour, theme):
         self.name = name
         self.played = 0
         self.won = 0
@@ -485,6 +487,13 @@ class Team:
         self.points = 0
         self.primaryColour = primaryColour
         self.secondaryColour = secondaryColour
+        self.theme = theme
+        self.stats = {"biggestwin": {"Score": 0, "match": "Not Recorded"},
+                      "biggestloss": {"Score": 0, "match": "Not Recorded"},
+                      "mosttriesscored": {"Score": 0, "match": "Not Recorded"},
+                      "mosttriesconceded": {"Score": 0, "match": "Not Recorded"},
+                      "highestscore": {"Score": 0, "match": "Not Recorded"},
+                      "highestconceded": {"Score": 0, "match": "Not Recorded"}}
 
     def getEntry(self):
         return [
@@ -517,6 +526,66 @@ class Team:
         self.losingbonuspoints = 0
         self.pointsdifference = 0
         self.points = 0
+
+    def setRecords(self, match):
+        # Check if team is home or away
+        matchName = ""
+        matchData = match.calcPoints()
+        if match.home == self.name:
+            matchName = "At Home to " + match.away + " " + datetime.strftime(match.date, "%d %b %Y")
+            pointsDiff = matchData.get("homeScore") - matchData.get("awayScore")
+            # Tries Scored
+            if matchData.get("homeTries") > self.stats["mosttriesscored"]["Score"]:
+                self.stats["mosttriesscored"]["Score"] = matchData.get("homeTries")
+                self.stats["mosttriesscored"]["match"] = matchName
+            # Tries Conceded
+            if matchData.get("awayTries") > self.stats["mosttriesconceded"]["Score"]:
+                self.stats["mosttriesconceded"]["Score"] = matchData.get("awayTries")
+                self.stats["mosttriesconceded"]["match"] = matchName
+            # Highest Score
+            if matchData.get("homeScore") > self.stats["highestscore"]["Score"]:
+                self.stats["highestscore"]["Score"] = matchData.get("homeScore")
+                self.stats["highestscore"]["match"] = matchName
+            # Highest Conceded
+            if matchData.get("awayScore") > self.stats["highestconceded"]["Score"]:
+                self.stats["highestconceded"]["Score"] = matchData.get("awayScore")
+                self.stats["highestconceded"]["match"] = matchName
+            # biggest win
+            if pointsDiff > self.stats["biggestwin"]["Score"]:
+                self.stats["biggestwin"]["Score"] = pointsDiff
+                self.stats["biggestwin"]["match"] = matchName
+            # biggest Loss
+            if pointsDiff < self.stats["biggestloss"]["Score"]: 
+                self.stats["biggestloss"]["Score"] = pointsDiff
+                self.stats["biggestloss"]["match"] = matchName
+
+        if match.away == self.name:
+            matchName = "Away to " + match.away + " " + datetime.strftime(match.date, "%d %b %Y")
+            pointsDiff = matchData.get("awayScore") - matchData.get("homeScore")
+            # Tries Scored
+            if matchData.get("awayTries") > self.stats["mosttriesscored"]["Score"]:
+                self.stats["mosttriesscored"]["Score"] = matchData.get("awayTries")
+                self.stats["mosttriesscored"]["match"] = matchName
+            # Tries Conceded
+            if matchData.get("homeTries") > self.stats["mosttriesconceded"]["Score"]:
+                self.stats["mosttriesconceded"]["Score"] = matchData.get("homeTries")
+                self.stats["mosttriesconceded"]["match"] = matchName
+            # Highest Score
+            if matchData.get("awayScore") > self.stats["highestscore"]["Score"]:
+                self.stats["highestscore"]["Score"] = matchData.get("awayScore")
+                self.stats["highestscore"]["match"] = matchName
+            # Highest Conceded
+            if matchData.get("homeScore") > self.stats["highestconceded"]["Score"]:
+                self.stats["highestconceded"]["Score"] = matchData.get("homeScore")
+                self.stats["highestconceded"]["match"] = matchName
+            # biggest win
+            if pointsDiff > self.stats["biggestwin"]["Score"]:
+                self.stats["biggestwin"]["Score"] = pointsDiff
+                self.stats["highestconceded"]["match"] = matchName
+            # biggest Loss
+            if pointsDiff < self.stats["biggestloss"]["Score"]: 
+                self.stats["biggestloss"]["Score"] = pointsDiff
+                self.stats["biggestloss"]["match"] = matchName
 
 
 # debug function for testing.

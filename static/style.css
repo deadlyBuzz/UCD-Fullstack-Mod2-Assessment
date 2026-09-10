@@ -32,3 +32,7 @@ font:
     max-width: 800px;
     background-color: red;
 }
+
+.blackText{
+    color: black;
+}
