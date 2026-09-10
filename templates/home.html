@@ -32,6 +32,7 @@
                 {% for entry in leagueTable %}
                 <tr>
                     <td>{{ entry.position }} </td>
+                    <td><a href="{{ url_for('displayTeam', teamname=entry.name) }}">{{ entry.name }}</a> </td>
                     {% for data in entry.stats %}
                     <td> {{ data }} </td>
                     {% endfor %}

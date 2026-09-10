@@ -497,7 +497,6 @@ class Team:
 
     def getEntry(self):
         return [
-            self.name,
             self.played,
             self.won,
             self.drawn,
