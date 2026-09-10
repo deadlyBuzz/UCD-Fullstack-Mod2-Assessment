@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+
 allMatches = [
     {"ID": "1", "Round": 1, "Home": "Benetton", "Away": "Dragons", "Date": "Fri 25 Sep 2026 ", "Scores": [ ]} ,
     {"ID": "2", "Round": 1, "Home": "Connacht", "Away": "Stormers", "Date": "Fri 25 Sep 2026 ", "Scores": [ ]} ,
@@ -144,3 +147,52 @@ allMatches = [
     {"ID": "143", "Round": 18, "Home": "Zebre Parma", "Away": "Leinster", "Date": "Sat 15 May 2027 ", "Scores": [ ]} ,
     {"ID": "144", "Round": 18, "Home": "Dragons", "Away": "Stormers", "Date": "Sat 15 May 2027 ", "Scores": [ ]} ,
 ]
+
+
+class WeekNo:
+    def __init__(self, startDate, endDate, round):
+        self.startDateString = startDate
+        self.endDateString = endDate
+        self.startDate = datetime.strptime(startDate, "%d %b %Y")
+        self.endDate = datetime.strptime(endDate, "%d %b %Y")
+        self.Round = round
+
+
+class Calendar:
+    def __init__(self):
+        self.rounds = []
+        self.rounds.append(WeekNo("01 Sep 2026", "02 Oct 2026", 1))
+        self.rounds.append(WeekNo("02 Oct 2026", "09 Oct 2026", 2))
+        self.rounds.append(WeekNo("09 Oct 2026", "23 Oct 2026", 3))
+        self.rounds.append(WeekNo("23 Oct 2026", "30 Oct 2026", 4))
+        self.rounds.append(WeekNo("30 Oct 2026", "04 Dec 2026", 5))
+        self.rounds.append(WeekNo("04 Dec 2026", "18 Dec 2026", 6))
+        self.rounds.append(WeekNo("18 Dec 2026", "26 Dec 2026", 7))
+        self.rounds.append(WeekNo("26 Dec 2026", "02 Jan 2027", 8))
+        self.rounds.append(WeekNo("02 Jan 2026", "22 Jan 2027", 9))
+        self.rounds.append(WeekNo("22 Jan 2027", "29 Jan 2027", 10))
+        self.rounds.append(WeekNo("29 Jan 2027", "26 Feb 2027", 11))
+        self.rounds.append(WeekNo("26 Feb 2027", "19 Mar 2027", 12))
+        self.rounds.append(WeekNo("19 Mar 2027", "26 Mar 2027", 13))
+        self.rounds.append(WeekNo("26 Mar 2027", "16 Apr 2027", 14))
+        self.rounds.append(WeekNo("16 Apr 2027", "23 Apr 2027", 15))
+        self.rounds.append(WeekNo("23 Apr 2027", "07 May 2027", 16))
+        self.rounds.append(WeekNo("07 May 2027", "14 May 2027", 17))
+        self.rounds.append(WeekNo("14 May 2027", "16 May 2027", 18))
+        
+    def getCalendar(self):
+        return self.rounds
+
+    def getRound(self, weekNoDateTime):
+        for round in self.rounds:
+            if (round.startDate <= weekNoDateTime < round.endDate):
+                return round
+
+        return self.rounds[0]
+
+    def getDates(self, weekNo):
+        if 0 <= weekNo <= 18:
+            return next(round for round in self.rounds if round.Round == weekNo)
+
+        return self.rounds[0]
+    

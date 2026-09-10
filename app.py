@@ -1,7 +1,7 @@
 from flask import Flask, render_template, abort, request, flash, redirect
 from datetime import datetime, timedelta
 from operator import attrgetter
-from static.data.allMatches import allMatches
+from static.data.allMatches import allMatches, Calendar
 import os
 
 app = Flask(__name__)
@@ -10,6 +10,7 @@ app = Flask(__name__)
 leagueTable = ""
 debug = False
 allmatches = allMatches
+calendar = Calendar()
 
 
 class League:
@@ -44,7 +45,7 @@ class League:
     def getTable(self, date):
         index = 0
         prevTableBuilt = False
-        selectedDate = datetime.strptime("20  Sep 2026", "%d %b %Y")
+        selectedDate = date.startDate
         prevTable = []
         for team in self.table:
             team.clearData()
@@ -55,7 +56,7 @@ class League:
 
             matchData = match.calcPoints()
             for team in self.table:
-                if (match.date <= (selectedDate + timedelta(days=7))):
+                if (match.date < (date.endDate)):
                     if team.name == match.home:
                         team.points += matchData.get('homePoints')
                         team.trybonuspoints += matchData.get('homeTryBonusPoints')
@@ -424,8 +425,11 @@ def dbgPopulateMatches(matches):
 
 @app.route("/")
 def home():
-    today = datetime.strptime("26 Sep 2026", "%d %b %Y")
-    leagueTable = league.getTable("27 Sep 2026")
+    today = datetime.today()
+    weekDetails = calendar.getRound(datetime.today())
+    weekNo = weekDetails.Round
+
+    leagueTable = league.getTable(calendar.rounds[weekNo-1])
     matchDetails = []
 
     for match in league.matches:
@@ -435,13 +439,38 @@ def home():
     return render_template(
         "home.html",
         leagueTable=leagueTable,
-        matchDetails=matchDetails
+        matchDetails=matchDetails,
+        weekData=weekDetails
+        )
+
+
+@app.route("/WeekNo/<int:weekNumber>")
+def homeSelectedWeek(weekNumber):
+    today = datetime.today()
+
+    if weekNumber >= 1:
+        weekDetails = next((week for week in calendar.rounds if week.Round == weekNumber ),None)
+    else:
+        weekDetails = next((week for week in calendar.rounds if week.Round == 1 ),None)
+
+    leagueTable = league.getTable(next(week for week in calendar.rounds if week.Round == weekNumber ))
+    matchDetails = []
+
+    for match in league.matches:
+        matchDetails.append(match.getMatchDetails(today))
+
+    debugPrint(debug, matchDetails)  # TODO: Remove after Debug AC 2026-09-05
+    return render_template(
+        "home.html",
+        leagueTable=leagueTable,
+        matchDetails=matchDetails,
+        weekData=weekDetails
         )
 
 
 @app.route("/matches/<int:matchID>", methods=["GET", "POST"])
 def showMatch(matchID):
-    today = datetime.strptime("26 Sep 2026", "%d %b %Y")
+    today = datetime.today()
     if request.method == "POST":
         homescore = request.form.get("homescore", "")
         debugPrint(debug, homescore)
@@ -484,10 +513,10 @@ def showMatch(matchID):
 
 
 @app.route("/teams/<teamname>")
-def displayTeam(teamname, queryDate=datetime.strptime("26 Sep 2026", "%d %b %Y")):
+def displayTeam(teamname, queryDate=datetime.today()):
     today = queryDate
     matchDetails = []
-    leagueTable = league.getTable("27 Sep 2026")
+    leagueTable = league.getTable(datetime.strftime(queryDate, "%d %b %Y"))
     for match in league.matches:
         if (match.home == teamname) or ((match.away == teamname)):
             matchDetails.append(match.getMatchDetails(today))
