@@ -23,3 +23,16 @@ font:
     "Arial",
     sans-serif;
 }
+
+.cardHeader{
+    color:white
+}
+
+.redcard{
+    max-width: 800px;
+    background-color: red;
+}
+
+.blackText{
+    color: black;
+}

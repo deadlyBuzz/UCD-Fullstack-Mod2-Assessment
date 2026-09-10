@@ -1,77 +1,63 @@
 {% extends "base.html" %}
+{% import "mac_Match.html" as macMatch %}
 {%- set myDict = {'scheduled':"bg-secondary",
                     'in-progress':"bg-warning",
                     'full-time':"bg-success"} -%}
 
+{%- set tableDict = {'scheduled':"table-secondary",
+                    'in-progress':"table-warning",
+                    'full-time':"table-success"} -%}
+
 {% block content %}
-    <form method="POST">
-        <label for="homescore">Home Score</label>
-        <select name="homescore" id="homescore">
-            <option value="">Select a Score...</option>
-            <option value="ht">Try</option>
-            <option value="hc">Conversion</option>
-            <option value="hp">Penalty</option>
-            <option value="hg">Drop Goal</option>
-            <option value="hpt">Penalty Try</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <div class="card matchcard text-white {{ myDict[match.status] }} m-3 rounded">
-            <div class="card-body">
-                <h5 class="card-title">{{ match.game }}</h5>
-                <h6 class="card-subtitle">{{ match.date}}</h6>
-                <div class="card-text">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col" style="min-width:15rem">Team</th>
-                                <th scope="col">Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Home</th>
-                                <td>{{ match.home }}</td>
-                                <td>{{ match.homeScore }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Away</th>
-                                <td>{{ match.away }}</td>
-                                <td>{{ match.awayScore }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p class="text-muted">Scores:</p>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Home:</td>
-                                {% for score in match.Scores[0] %}
-                                <td>{{ score }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <td>Away:</td>
-                                {% for score in match.Scores[1] %}
-                                <td>{{ score }}</td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<section class="m-5">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="mx-5">
+            <h5>Home Score Controls</h5>
+            <p>From the form below, select the Score for the home team you wish to Log and press "Submit"</p>
+            <form method="POST">
+                <label for="homescore">Home Score</label>
+                <select name="homescore" id="homescore">
+                    <option value="">Select a Score...</option>
+                    <option value="ht">Try</option>
+                    <option value="hc">Conversion</option>
+                    <option value="hp">Penalty</option>
+                    <option value="hg">Drop Goal</option>
+                    <option value="hpt">Penalty Try</option>
+                </select>
+                <button type="submit" name="homeButton" class="btn btn-primary">Submit</button>
+            </form>
         </div>
+        <div class="mx-5">
+            <h5>Away Score Controls</h5>
+            <p>From the form below, select the Score for the home team you wish to Log and press "Submit"</p>
+            <form method="POST">
+                <label for="awayscore">Away Score</label>
+                <select name="awayscore" id="awayscore">
+                    <option value="">Select a score...</option>
+                    <option value="at">Try</option>
+                    <option value="ac">Conversion</option>
+                    <option value="ap">Penalty</option>
+                    <option value="ag">Drop Goal</option>
+                    <option value="apt">Penalty Try</option>
+                </select>
+                <button type="submit" name="awayButton" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</section>
+<section class="mx-5">
+    <div class="d-flex container-fluid flex-column align-items-center justify-content-center m-3 py-2">
+        {{ macMatch.displayMatch(match, myDict, tableDict)}}
+    </div>
+</section>
+<section class="mx-5">
+    <div class="d-flex justify-content-center align-items-center m-3">
         <form method="POST">
-        <label for="awayscore">Away Score</label>
-        <select name="awayscore" id="awayscore">
-            <option value="">Select a score...</option>
-            <option value="at">Try</option>
-            <option value="ac">Conversion</option>
-            <option value="ap">Penalty</option>
-            <option value="ag">Drop Goal</option>
-            <option value="apt">Penalty Try</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+            <h5>Undo Last Score</h5>
+            <p>Press the 'UNDO' button to remove the last score</p>
+            <button type="submit" name="undoButton" class="btn btn-primary {% if match.undoLocked %} disabled {% endif %}">Undo</button>
+        </form>
+    </div>
+</section>
+
 {% endblock %}
