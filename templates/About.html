@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block Title %}About{% endblock %}
+
+{% block content %}
+<h1>Introduction</h1>
+<p>
+    I've been there more than once, on the stands of thomond park, at the crunch time in the season and everyone has their calculators and calendars out.
+    If we win this, are we through?
+    If we win this but Glasgow get a bonus point, what does that mean?
+    What is the score in the Leinster match, are they far ahead enough to make a difference?
+</p>
+
+<p>
+    And it seems, nowhere has the answers.
+    Some websites, like BBC or Sky Sports have some live scores but no update to what the table look like.
+    Google has all the scores but not a table to tell you the true picture.
+    If watching it on TV, SKY Sports may briefly pop up an "as it stands" table subset showing you some information but it's not something you can rely on or count on being there when the questions are asked.</p>
+<p>
+    This Page is the answer.
+</p>
+<p>
+    It is a community sourced live table predictor with real live data.
+    The Community enter the scores for a match as it comes in and the website uses this data, and this data alone to build a set of data that shows the live table based on the given scores.
+    Fans can use this website to see how each team is faring in the table and in each match in real time.
+</p>
+
+<h1>Instructions</h1>
+<p>
+    On the main landing page, the table is displayed at the top showing what the table looks like today, with which round has been played.<br>
+    Beneath the table, there is a list of the matches.
+</p>
+    To update the match: 
+    <ul>
+        <li>click the banner of the match.</li>
+        <li>This will take you to the Match Page.</li>
+        <li>From here, there are two controls above a display of the selected match.</li>
+        <li>The Controls on the left are to update the HOME score.</li>
+        <li>The Controls on the right are to update the AWAY score.</li>
+        <li>When a team has scored, select the score from the dropdown.</li>
+        <li>Once you have selected the score that has been scored, the site will add this to the history (shown at the bottom of the card) and the table will be re-calculated with the new statistic</li>
+        <li>If you make a mistake, and a score has been added in error, you can select the "undo" button</li>
+        <li>This will remove the last score added from the match</li>
+        <li>Once you have pressed UNDO, the UNDO button will remain disabled until you add another score.</li>
+        <li>Only if you undo a Conversion, will you be able to undo once again to remove the associated try as well</li>
+        <li>when finished, just press the HOME button to go back to the main page</li>
+    </ul>
+<p>
+    Enjoy.
+    Alan
+</p>
+{%endblock %}

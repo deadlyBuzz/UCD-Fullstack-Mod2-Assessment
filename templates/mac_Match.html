@@ -50,3 +50,16 @@
             </div>
         </div>
 {%- endmacro %}
+
+{% macro displayMatchLegend() %}
+    <div class="container my-3 p-2">
+        <h5> The following colours are used to display eatch match </h5>
+        <table>
+            <tbody class="legendTable">
+                <tr><td style="color: white; background-color: green;">Green</td><td> Match Complete (Scheduled Date before today)</td></tr>
+                <tr><td style="color: black; background-color: gold;">Yellow</td><td>Match in Progress (Scheduled Date = Today)</td></tr>
+                <tr><td style="color: white; background-color: grey;">Grey</td><td>Match Scheduled (Scheduled date after today</td></tr>
+            </tbody>
+        </table>
+    </div>
+{% endmacro %}

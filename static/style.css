@@ -36,3 +36,8 @@ font:
 .blackText{
     color: black;
 }
+
+tbody.legendTable{
+    border: 2px solid rgb(140 140 140);
+    padding: 0.5rem;
+}
