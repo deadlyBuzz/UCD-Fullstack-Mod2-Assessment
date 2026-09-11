@@ -3,9 +3,10 @@ from datetime import datetime, timedelta
 from operator import attrgetter
 from static.data.allMatches import allMatches, Calendar
 import os
+import re
 
 app = Flask(__name__)
-# app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
+app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
 
 leagueTable = ""
 debug = False
@@ -43,21 +44,33 @@ class League:
             matchID += 1
 
     def getTable(self, date):
+        # return the data used to build the table.
         index = 0
         prevTableBuilt = False
         selectedDate = date.startDate
         prevTable = []
+
+        # empty any previous data, we'll go through each match and rebuild.
         for team in self.table:
             team.clearData()
+
+        # Rattle through each match
         for match in self.matches:
+            # Make a copy of the table for the previous week.
+            # This is to find what last weeks position was so
+            # it can be displayed on the table.
             if ((prevTableBuilt is False) and (match.date >= selectedDate)):
                 prevTable = self.table
                 prevTableBuilt = True
 
+            # Get the match to calculate the points for home and away
             matchData = match.calcPoints()
+
+            # Iterate through each line in the leage table (team and its data)
             for team in self.table:
-                if (match.date < (date.endDate)):
+                if (match.date < (date.endDate)):   # Ensure we only use valid matches
                     if team.name == match.home:
+                        # Slightly different calculations based on the team playing home or away.
                         team.points += matchData.get('homePoints')
                         team.trybonuspoints += matchData.get('homeTryBonusPoints')
                         team.tries_for += matchData.get('homeTries')
@@ -93,11 +106,14 @@ class League:
                         team.penalties_for += matchData.get('awayPenalties')
                         team.penalties_against += matchData.get('homePenalties')
 
+                # Allow the team to check if this match impacted any records.
                 team.setRecords(match)
 
+        # each team Data has now been updated, we have the rows of the table to display
         returnTable = []
         prevReturnTable = []
 
+        # Start with each line and build something the template can display, starting with previous weeks table
         for team in sorted(prevTable, key=attrgetter('points', 'won', 'pointsdifference'), reverse=True):
             index += 1
             prevReturnTable.append({
@@ -107,6 +123,7 @@ class League:
 
         index = 0
 
+        # Now do this weeks table, but add the data for last weeks table.
         for team in sorted(self.table, key=attrgetter('points', 'won', 'pointsdifference'), reverse=True):
             index += 1
             if len(prevReturnTable) > 0:
@@ -118,9 +135,11 @@ class League:
                 "tabledelta": tableDelta,
                 "stats": team.getEntry()})
 
+        # return the table as the list of built lines.
         return returnTable
 
     def getTeam(self, teamName):
+        # Based on the team name provided, get the team
         return next((team for team in self.table if team.name == teamName), None)
 
 
@@ -266,6 +285,8 @@ class Match:
         returnObj['status'] = self.status
         returnObj['ID'] = self.id
 
+        # Scores are in a list.
+        # Update to display in home and away and in seequence.
         scores = [[]*2, []]
         for score in self.scores:
             if score.scorer == "home":
@@ -282,6 +303,7 @@ class Match:
 
 
 class Score:
+    # Should be a dictionary but had planned on making it do more
     def __init__(self, type, value, timer, scorer):
         self.type = type
         self.value = value
@@ -321,6 +343,9 @@ class Team:
                       "highestconceded": {"Score": 0, "match": "Not Recorded"}}
 
     def getEntry(self):
+        """
+        return data in list format for display
+        """
         return [
             self.played,
             self.won,
@@ -332,6 +357,10 @@ class Team:
             self.points]
 
     def clearData(self):
+        """
+        External calls increment the existig value so allow to clear so
+        we don't keep incrementing with each refresh
+        """
         self.played = 0
         self.won = 0
         self.drawn = 0
@@ -352,6 +381,9 @@ class Team:
         self.points = 0
 
     def setRecords(self, match):
+        """
+        Check and see if the results of the match provided break any records.
+        """
         # Check if team is home or away
         matchName = ""
         matchData = match.calcPoints()
@@ -425,13 +457,17 @@ def dbgPopulateMatches(matches):
 
 @app.route("/")
 def home():
+    # Get today as the date so we can colour code matches
     today = datetime.today()
+
+    # and also display todays match table.
     weekDetails = calendar.getRound(datetime.today())
     weekNo = weekDetails.Round
 
     leagueTable = league.getTable(calendar.rounds[weekNo-1])
     matchDetails = []
 
+    # Build the list of matches to display
     for match in league.matches:
         matchDetails.append(match.getMatchDetails(today))
 
@@ -448,6 +484,7 @@ def home():
 def homeSelectedWeek(weekNumber):
     today = datetime.today()
 
+    # get the details for the selected round (Start date etc.)
     if weekNumber >= 1:
         weekDetails = next((week for week in calendar.rounds if week.Round == weekNumber ),None)
     else:
@@ -467,11 +504,14 @@ def homeSelectedWeek(weekNumber):
         weekData=weekDetails
         )
 
-
 @app.route("/matches/<int:matchID>", methods=["GET", "POST"])
+# Show the selected match on the page.
 def showMatch(matchID):
     today = datetime.today()
+
+    # Someone has submitted a score
     if request.method == "POST":
+        # Get the data from the form.
         homescore = request.form.get("homescore", "")
         debugPrint(debug, homescore)
         awayscore = request.form.get("awayscore", "")
@@ -479,6 +519,8 @@ def showMatch(matchID):
         homeButtonVal = request.form.get("homeButton")
         awayButtonVal = request.form.get("awayButton")
         undoButtonVal = request.form.get("undoButton")
+
+        # Evaluate the data for the selection and apply it to the match
         if (homeButtonVal is not None):
             match homescore:
                 case "ht":
@@ -505,6 +547,7 @@ def showMatch(matchID):
                 case "apt":
                     league.matches[matchID].updateScore(Score("PT", 7, datetime.now(), "away"))
 
+        # Manage the undo button.
         if (undoButtonVal is not None):
             league.matches[matchID].undoScore()
 
@@ -549,6 +592,52 @@ def displayTeam(teamname, queryDate=datetime.today()):
 
     team = league.getTeam(teamname)
     return render_template("team.html", leagueTable=leagueTable, matchDetails=matchDetails, team=team)
+
+
+@app.route("/about")
+def about():
+    return render_template("About.html")
+
+
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        message = request.form.get("message", "").strip()
+
+        errors = []
+
+        if not name:
+            errors.append("Name is required.")
+        if not email:
+            errors.append("Email is required.")
+        if not re.match("([A-Z\._1-9]+)[@]([A-Z\._1-9]+)\.[A-Z]{3}", email.upper()):
+            errors.append("Please enter a valid email")
+        if not message:
+            errors.append("Message is required.")
+
+        if errors:
+            return render_template(
+                "contact.html",
+                errors=errors,
+                name=name,
+                email=email,
+                message=message
+            )
+
+        flash("Thanks for your message!")
+        print("User " + name + "(" + email + "), left the following message:")
+        print(message)
+        return redirect("/contact")
+
+    return render_template(
+        "contact.html",
+        errors=[],
+        name="",
+        email="",
+        message=""
+    )
 
 
 def debugPrint(debug, message):

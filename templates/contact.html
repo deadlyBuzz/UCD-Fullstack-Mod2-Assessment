@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex container flex-column justify-content-center align-items-center" style="max-width: 600px;">
+    <h2>Contact Me</h2>
+    <p>Please get in touch with some suggestions or corrections</p>
+    <form method="post" class="p-3 border rounded w-100">
+        <div class="mb-3">
+            <label for="name">Name</label>
+            <input name="name" id="name" class="form-control" value="{{ name }}">
+        </div>
+        <div class="mb-3">
+            <label for="email">Email</label>
+            <input name="email" id="email" class="form-control" value="{{ email }}">
+        </div>
+        <div class="mb-3">
+            <label for="message">Message</label>
+            <textarea name="message" id="message" class="form-control">{{ message }}</textarea>
+        </div>
+        {% if errors %}
+        <ul class="text-danger">
+        {% for err in errors %}
+        <li>{{ err }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+{% endblock %}
