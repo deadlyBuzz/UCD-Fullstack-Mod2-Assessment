@@ -453,7 +453,7 @@ def homeSelectedWeek(weekNumber):
     else:
         weekDetails = next((week for week in calendar.rounds if week.Round == 1 ),None)
 
-    leagueTable = league.getTable(next(week for week in calendar.rounds if week.Round == weekNumber ))
+    leagueTable = league.getTable(weekDetails)
     matchDetails = []
 
     for match in league.matches:
@@ -512,11 +512,37 @@ def showMatch(matchID):
     return render_template("match.html", match=displayMatch)
 
 
+
 @app.route("/teams/<teamname>")
 def displayTeam(teamname, queryDate=datetime.today()):
+    """
+    A function to display a selected team for the given date
+    Defaults at today
+    ...
+
+    Attributes
+    ----------
+    teamname: str
+        The team name for the team to be displayed.
+
+    queryDate: datetime
+        a datetime object passed for the page to calculate
+        how far to calculate statistics
+
+    returns
+    -------
+        a render template to 'team.html' handing over the league
+        table and the match details from the selected team.
+
+    """
     today = queryDate
     matchDetails = []
-    leagueTable = league.getTable(datetime.strftime(queryDate, "%d %b %Y"))
+    weekDetails = calendar.getRound(queryDate)
+
+    # build the league table to calculate statistics and scores
+    leagueTable = league.getTable(weekDetails)
+
+    # Iterate through all matches and filter only matches concerning the selected team.
     for match in league.matches:
         if (match.home == teamname) or ((match.away == teamname)):
             matchDetails.append(match.getMatchDetails(today))
@@ -525,9 +551,11 @@ def displayTeam(teamname, queryDate=datetime.today()):
     return render_template("team.html", leagueTable=leagueTable, matchDetails=matchDetails, team=team)
 
 
-# debug print convenience message.
-# Make it easier to deactivate messages when not debugging.
 def debugPrint(debug, message):
+    """
+    debug print convenience message.
+    Make it easier to deactivate messages when not debugging.
+    """
     if debug is True:
         print(message)
 
