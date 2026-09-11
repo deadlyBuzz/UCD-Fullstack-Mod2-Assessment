@@ -59,3 +59,8 @@ The code is inconsistent.  I had some places where I looped through a list with 
 I had planned to use a more consistent case for capitalisation but this is not the same throughout and is definitely a fallback but I have run out of time to implement this.
 I have tried using `.GET(key)` but when getting the logic working, the code `["key"]` worked as well and I didn't get a chance to go back and fix it.
 
+# Accessing
+The code and files can be found at this github repo: https://github.com/deadlyBuzz/UCD-Fullstack-Mod2-Assessment
+The site is uploaded to render.com at: https://ucd-full-stack-module-2-python-assessment.onrender.com/
+
+
