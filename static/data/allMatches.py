@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
-
+"""
+allMatches: a Dictionary of all the matches and fixtures to set up the League
+"""
 allMatches = [
     {"ID": "1", "Round": 1, "Home": "Benetton", "Away": "Dragons", "Date": "Fri 25 Sep 2026 ", "Scores": [ ]} ,
     {"ID": "2", "Round": 1, "Home": "Connacht", "Away": "Stormers", "Date": "Fri 25 Sep 2026 ", "Scores": [ ]} ,
@@ -150,6 +152,42 @@ allMatches = [
 
 
 class WeekNo:
+    """
+    A Class to contain a match week or round
+
+    Parameters:
+    ----------
+    startDate: str
+        The Starting Date for the round (inclusive)
+
+    endDate: str
+        The Ending Date for the round (Exclusive)
+        Note, the endDate for this round and start of next
+        should be the same.
+
+    round: int
+        the round number (week number) for the weekNo object
+
+    Attributes:
+    ---------
+    startDateString: str
+        The Starting Date for the round (inclusive)
+
+    endDateString: str
+        The Ending Date for the round (Exclusive)
+        Note, the endDate for this round and start of next
+        should be the same.
+
+    startDate: datetime
+        the startDate parameter passed converted into a datetime object.
+
+    endDate: datetime
+        the endDate parameter passed converted into a datetime object.
+
+    Round: int
+        the round number (week number) for the weekNo object
+
+    """
     def __init__(self, startDate, endDate, round):
         self.startDateString = startDate
         self.endDateString = endDate
@@ -159,6 +197,24 @@ class WeekNo:
 
 
 class Calendar:
+    """
+    Class to represent all of the weekNo;s in the league Calendar
+    ...
+    
+    Attributes
+    ----------
+    rounds: []
+        A list of weekNo objects for each round.
+
+    Methods
+    ----------
+    getCalendar()
+        returns the list of WeekNo objects for the round.
+
+    getRound(weekNoDateTime)
+        takes a datetime object and finds the corresponding round for it.
+
+    """
     def __init__(self):
         self.rounds = []
         self.rounds.append(WeekNo("01 Sep 2026", "02 Oct 2026", 1))
@@ -179,11 +235,29 @@ class Calendar:
         self.rounds.append(WeekNo("23 Apr 2027", "07 May 2027", 16))
         self.rounds.append(WeekNo("07 May 2027", "14 May 2027", 17))
         self.rounds.append(WeekNo("14 May 2027", "16 May 2027", 18))
-        
+
     def getCalendar(self):
+        """
+        returns the list of WeekNo objects for the round.
+        """
         return self.rounds
 
     def getRound(self, weekNoDateTime):
+        """
+        Takes in a DateTime object and returns the relevant 
+        weekNo object for that dateTime.
+        ...
+
+        Attributes
+        ----------
+        weekNoDateTime: datetime
+            A datetime for a date you wish to find the corresponding weekNo for.
+
+        Returns
+        --------
+        the weekNo object that corresponds to the selected date in weekNoDateTime
+
+        """
         for round in self.rounds:
             if (round.startDate <= weekNoDateTime < round.endDate):
                 return round
@@ -191,6 +265,9 @@ class Calendar:
         return self.rounds[0]
 
     def getDates(self, weekNo):
+        """
+        Takes in a week/round number and returns the corresponding date
+        """
         if 0 <= weekNo <= 18:
             return next(round for round in self.rounds if round.Round == weekNo)
 
