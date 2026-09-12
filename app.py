@@ -1,12 +1,12 @@
 from flask import Flask, render_template, abort, request, flash, redirect
 from datetime import datetime, timedelta
 from operator import attrgetter
-from static.data.allMatches import allMatches, Calendar
+from static.data.allMatches import allMatches, Calendar, dbgPopulateMatches
 import os
 import re
 
 app = Flask(__name__)
-app.secret_key = os.environ['SECRET_KEY']  # Disabled during dev so Debugger can attach.
+app.secret_key = os.environ['SECRET_KEY']
 
 leagueTable = ""
 debug = False
@@ -416,7 +416,7 @@ class Team:
                 self.stats["biggestloss"]["match"] = matchName
 
         if match.away == self.name:
-            matchName = "Away to " + match.away + " " + datetime.strftime(match.date, "%d %b %Y")
+            matchName = "Away to " + match.home + " " + datetime.strftime(match.date, "%d %b %Y")
             pointsDiff = matchData.get("awayScore") - matchData.get("homeScore")
             # Tries Scored
             if matchData.get("awayTries") > self.stats["mosttriesscored"]["Score"]:
@@ -437,28 +437,16 @@ class Team:
             # biggest win
             if pointsDiff > self.stats["biggestwin"]["Score"]:
                 self.stats["biggestwin"]["Score"] = pointsDiff
-                self.stats["highestconceded"]["match"] = matchName
+                self.stats["biggestwin"]["match"] = matchName
             # biggest Loss
             if pointsDiff < self.stats["biggestloss"]["Score"]: 
                 self.stats["biggestloss"]["Score"] = pointsDiff
                 self.stats["biggestloss"]["match"] = matchName
 
-
-# debug function for testing.
-# Add a bunch of match results so that we can see the table and the matches
-# being displayed.
-# TODO: Remove before Launch
-def dbgPopulateMatches(matches):
-    matches[0].updateScore(Score("T", 5, datetime.now(), "away"))
-    matches[0].updateScore(Score("T", 5, datetime.now(), "home"))
-    matches[0].updateScore(Score("C", 2, datetime.now(), "home"))
-    matches[0].updateScore(Score("T", 5, datetime.now(), "home"))
-
-
 @app.route("/")
 def home():
     # Get today as the date so we can colour code matches
-    today = datetime.today()
+    today = datetime.today() + timedelta(weeks=4)
 
     # and also display todays match table.
     weekDetails = calendar.getRound(datetime.today())
@@ -654,7 +642,7 @@ league = League()
 
 
 # Add some scores for testing.  TODO Remove before launch AC 2026-09-04
-dbgPopulateMatches(league.matches)
+dbgPopulateMatches(league.matches, Score)
 
 if __name__ == "__main__":
     app.run(debug=True)
