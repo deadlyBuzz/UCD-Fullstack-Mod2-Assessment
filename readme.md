@@ -48,6 +48,7 @@ A Excerpt from the Instructions is shown:
 
 # AI Usage
 To be fair, I had little use of AI for thsi project, simply some questions on how to iterate through a list of dictionaries, or sort a list of dictionaries when a simple search gave me a very specific (yet irrellevant) result from stack overflow 16 years ago.
+After the system was built, I had a conversation with Google Gemini to extract the scores for the first three rounds based on last years results for me and to put it ito a format that updated `dbgPopulateMatches`.
 
 # Samples
 I reviewed the samples from the course to find what works and reversed engineered them to get this site working.

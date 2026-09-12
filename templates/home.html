@@ -50,7 +50,7 @@
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = 1)}}">First</a></li>
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = weekData.Round - 5)}}"> -5 </a></li>
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = weekData.Round - 1)}}"> {{ weekData.Round-1 }}</a></li>
-                <li class="page-item"><a class="page-link" href="#"> {{ weekData.Round }} </a></li>
+                <li class="page-item active"><a class="page-link" href="#"> {{ weekData.Round }} </a></li>
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = weekData.Round + 1)}}"> {{ weekData.Round+1 }}</a></li>
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = weekData.Round + 5)}}"> +5 </a></li>
                 <li class="page-item"><a class="page-link" href="{{ url_for('homeSelectedWeek', weekNumber = -1)}}">Latest</a></li>
